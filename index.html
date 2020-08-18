@@ -35,7 +35,7 @@
             var analyser = new THREE.AudioAnalyser( sound, 32 );
 
             // get the average frequency of the sound
-            var data = analyser.getAverageFrequency();
+            var audiodata = analyser.getAverageFrequency();
 
             var renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
@@ -46,6 +46,45 @@
             var phong = new THREE.MeshPhongMaterial();
             var cube = new THREE.Mesh( geometry, material );
             scene.add( cube );
+
+            // create the particle variables
+            var particleCount = 1800,
+            particles = new THREE.Geometry(),
+            pMaterial = new THREE.ParticleBasicMaterial({
+                color: 0xFFFFFF,
+                size: 20,
+                map: THREE.ImageUtils.loadTexture(
+                  "assets/images/particle.png"
+                ),
+                blending: THREE.AdditiveBlending,
+                transparent: true
+              });
+              
+
+            // now create the individual particles
+            for (var p = 0; p < particleCount; p++) {
+
+            // create a particle with random
+            // position values, -250 -> 250
+            var pX = Math.random() * 500 - 250,
+            pY = Math.random() * 500 - 250,
+            pZ = Math.random() * 500 - 250,
+            particle = 
+                new THREE.Vector3(pX, pY, pZ);
+
+            // add it to the geometry
+            particles.vertices.push(particle);
+            }
+
+            // create the particle system
+            var particleSystem = new THREE.Points(
+            particles,
+            pMaterial);
+
+            particleSystem.sortParticles = true;
+
+            // add it to the scene
+            scene.add(particleSystem);
 
             //var light = new THREE.DirectionalLight( 0xffffff, 0.2 );
             //light.position.set( 0, 1, 1 ).normalize();
@@ -61,12 +100,12 @@
             function animate() {
                 requestAnimationFrame( animate );
                 analyser.getFrequencyData();
-                console.debug(analyser.data);
-                cube.material.color = new THREE.Color("rgb(" + Math.round(analyser.data[2]/2) + "," + Math.round(analyser.data[4]/2) + "," + Math.round(analyser.data[6]/2) + ")");
-                cube.rotation.x += analyser.data[4]/1000;
-                cube.rotation.y += analyser.data[8]/1000;
+                cube.material.color = new THREE.Color("rgb(" + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + ")");
+                cube.rotation.x += analyser.getAverageFrequency()/10000;
+                cube.rotation.y += analyser.getAverageFrequency()/10000;
+
                 
-                
+                particleSystem.rotateY(analyser.getAverageFrequency()/10000);
                 renderer.render( scene, camera );
             }
             animate();
