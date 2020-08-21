@@ -2,7 +2,8 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>My first three.js app</title>
+    <title>Bossman musicdisk</title>
+    <link rel="stylesheet" href="player.css">
 		<style>
 			body { margin: 0; }
 			canvas { display: block; }
@@ -24,7 +25,7 @@
 
             // load a sound and set it as the Audio object's buffer
             var audioLoader = new THREE.AudioLoader();
-            audioLoader.load( 'music/OpenOceans.mp3', function( buffer ) {
+            audioLoader.load( 'music/Wrecklamation.mp3', function( buffer ) {
                 sound.setBuffer( buffer );
                 sound.setLoop( true );
                 sound.setVolume( 0.5 );
@@ -41,15 +42,6 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            var geometry = new THREE.OctahedronGeometry(2,0);
-            var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-            var phong = new THREE.MeshPhongMaterial({
-              color : 0x00FF00,
-              shininess : Math.pow(2,9)
-            });
-            var cube = new THREE.Mesh( geometry, phong );
-            scene.add( cube );
-
             scene.add( new THREE.AmbientLight( 0x222222 ) );
 
             var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -58,17 +50,18 @@
 
 
             // create the particle variables
-            var particleCount = 1800,
+            var particleCount = 8000,
             particles = new THREE.Geometry(),
             pMaterial = new THREE.PointsMaterial({
-                color: 0xFFFFFF,
-                size: 20,
+                color: 0x5555FF,
+                size: 10,
                 map: new THREE.TextureLoader().load("assets/images/particle.png"),
                 blending: THREE.AdditiveBlending,
                 depthTest:false,
-                transparent: true
+                transparent: false
               });
               
+              particles.velocity = new THREE.Vector3(0, Math.random(), 0);
 
             // now create the individual particles
             for (var p = 0; p < particleCount; p++) {
@@ -78,9 +71,12 @@
             var pX = Math.random() * 500 - 250,
             pY = Math.random() * 500 - 250,
             pZ = Math.random() * 500 - 250,
+            
             particle = 
                 new THREE.Vector3(pX, pY, pZ);
-
+            
+            particle.velocity = new THREE.Vector3(0,-Math.random(),0);
+            
             // add it to the geometry
             particles.vertices.push(particle);
             }
@@ -91,35 +87,120 @@
             pMaterial);
 
             particleSystem.sortParticles = true;
+            particleSystem.rotation.x = Math.random()/10;
+                particleSystem.rotation.y = Math.random()/10;
+                particleSystem.rotation.z = Math.random()/10;
 
             // add it to the scene
             scene.add(particleSystem);
 
-            //var light = new THREE.DirectionalLight( 0xffffff, 0.2 );
-            //light.position.set( 0, 1, 1 ).normalize();
-            //scene.add(light);
+            //var geometry = new THREE.SphereGeometry(1.5,64,64);
+            var geometry = new THREE.IcosahedronGeometry(2);
+            var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+            var phong = new THREE.MeshPhongMaterial({
+              color : 0x111111,
+              shininess : 150,
+              depthTest : true,
+              fog:true,
+              reflectivity : 2,
+              refractionRatio : 0.98,
+              transparent : false,
+              specular : 0x111111
+            });
+            var cube = new THREE.Mesh( geometry, phong );
+            scene.add( cube );
+            renderer.sortObjects = false;
 
-            //var ambient = new THREE.AmbientLight( 0x404040 ); // soft white light
-            //scene.add( ambient );
-
-
-
+            
             camera.position.z = 5;
 
             function animate() {
                 requestAnimationFrame( animate );
+
+                var time = Date.now() * 0.00005;
+
+                camera.position.x += ( 3 - camera.position.x ) * 0.05;
+				        camera.position.y += ( - 3 - camera.position.y ) * 0.05;
+
+                camera.lookAt( scene.position );
+                for ( var i = 0; i < scene.children.length; i ++ ) {
+
+                  var object = scene.children[ i ];
+        
+                  if ( object instanceof THREE.Points ) {
+        
+                    object.rotation.y = time * ( i < 4 ? i + 1 : - ( i + 1 ) );
+        
+                  }
+        
+                }
                 analyser.getFrequencyData();
                 cube.material.color = new THREE.Color("rgb(" + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + ")");
+                
                 cube.rotation.x += analyser.getAverageFrequency()/10000;
                 cube.rotation.y += analyser.getAverageFrequency()/10000;
+                cube.scale.x = analyser.getAverageFrequency()/100;
+                cube.scale.y = analyser.getAverageFrequency()/100;
+                cube.scale.z = analyser.getAverageFrequency()/100;
 
                 
-                particleSystem.rotateY(analyser.getAverageFrequency()/10000);
+                //particleSystem.rotateY(analyser.getAverageFrequency()/10000);
+                
+
+                var pCount  = particleCount;
+
+                while(pCount--)
+                {
+                  var particle = particles.vertices[pCount];
+                  
+
+                  if(particle.y < -200)
+                  {
+                    particle.y = 200;
+                    particle.velocity = 0;
+                  }
+
+                  particle.velocity.y -= Math.random() * .1;
+
+                  particle.y += particle.velocity.y;
+                  particle.x += particle.velocity.x;
+
+                }
+
+                particleSystem.geometry.__dirtyVertices = true;
+
+
+                renderer.sortObjects=false;
                 renderer.render( scene, camera );
             }
             animate();
             
 
-		</script>
+    </script>
+    <div class="container">  
+      <div class="box"></div>      
+      <img src="./assets/images/openocean.jpg" id="thumbnail" />
+      
+      <img src="./assets/icons/play.png" onclick="playPause()" id="play-pause" />
+      <img src="./assets/icons/forward.png" onclick="nextSong()" id="next-song" />
+      <img src="./assets/icons/backward.png" onclick="previousSong()" id="previous-song" />
+
+      <div class="song-artist">Bossman</div>
+      <div class="song-title">Open Oceans</div>
+
+      <!-- Input element for progress bar - min=0 starting value of every song - max length will change per song so leave empty -->
+      
+      <input 
+          type="range" 
+          id="progress-bar" 
+          min="0" 
+          max="" 
+          value="0" 
+          onchange="changeProgressBar()"
+      />
+
+      <div class="currentTime"></div>
+      <div class="durationTime"></div>
+  </div>
 	</body>
 </html>
