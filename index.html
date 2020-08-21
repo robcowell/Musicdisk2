@@ -41,22 +41,31 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            var geometry = new THREE.BoxGeometry(2,2,2);
+            var geometry = new THREE.OctahedronGeometry(2,0);
             var material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
-            var phong = new THREE.MeshPhongMaterial();
-            var cube = new THREE.Mesh( geometry, material );
+            var phong = new THREE.MeshPhongMaterial({
+              color : 0x00FF00,
+              shininess : Math.pow(2,9)
+            });
+            var cube = new THREE.Mesh( geometry, phong );
             scene.add( cube );
+
+            scene.add( new THREE.AmbientLight( 0x222222 ) );
+
+            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+            directionalLight.position.set( 1, 1, 1 ).normalize();
+            scene.add( directionalLight );
+
 
             // create the particle variables
             var particleCount = 1800,
             particles = new THREE.Geometry(),
-            pMaterial = new THREE.ParticleBasicMaterial({
+            pMaterial = new THREE.PointsMaterial({
                 color: 0xFFFFFF,
                 size: 20,
-                map: THREE.ImageUtils.loadTexture(
-                  "assets/images/particle.png"
-                ),
+                map: new THREE.TextureLoader().load("assets/images/particle.png"),
                 blending: THREE.AdditiveBlending,
+                depthTest:false,
                 transparent: true
               });
               
