@@ -42,9 +42,9 @@
             renderer.setSize( window.innerWidth, window.innerHeight );
             document.body.appendChild( renderer.domElement );
 
-            scene.add( new THREE.AmbientLight( 0x222222 ) );
+            scene.add( new THREE.AmbientLight( 0x111111 ) );
 
-            var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
+            var directionalLight = new THREE.DirectionalLight( 0xFFFFFF, 1 );
             directionalLight.position.set( 1, 1, 1 ).normalize();
             scene.add( directionalLight );
 
@@ -98,7 +98,7 @@
             var geometry = new THREE.IcosahedronGeometry(2);
             var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
             var phong = new THREE.MeshPhongMaterial({
-              color : 0x111111,
+              color : 0x110000,
               shininess : 150,
               depthTest : true,
               fog:true,
@@ -139,14 +139,19 @@
                 
                 cube.rotation.x += analyser.getAverageFrequency()/10000;
                 cube.rotation.y += analyser.getAverageFrequency()/10000;
+                cubescale = analyser.getFrequencyData();
+                
+                /*
+                cube.scale.x = cubescale[4]/100;
+                cube.scale.y = cubescale[4]/100;
+                cube.scale.z = cubescale[4]/100;
+                */
+
                 cube.scale.x = analyser.getAverageFrequency()/100;
                 cube.scale.y = analyser.getAverageFrequency()/100;
                 cube.scale.z = analyser.getAverageFrequency()/100;
 
                 
-                //particleSystem.rotateY(analyser.getAverageFrequency()/10000);
-                
-
                 var pCount  = particleCount;
 
                 while(pCount--)
