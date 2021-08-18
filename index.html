@@ -250,9 +250,10 @@
         sound.setVolume(0.5);
         sound.play();
         sound.isPlaying = true;
+        sound.onEnded = (function () {nextSong();});
       });
 
-      sound.onEnded(function () {nextSong();})
+      
 
       // create an AudioAnalyser, passing in the sound and desired fftSize
       var analyser = new THREE.AudioAnalyser(sound, 32);
@@ -293,7 +294,7 @@
           pZ = Math.random() * 500 - 250,
           particle = new THREE.Vector3(pX, pY, pZ);
 
-        particle.velocity = new THREE.Vector3(0, -Math.random(), 0);
+        particle.velocity = new THREE.Vector3(10, Math.random(), 0);
 
         // add it to the geometry
         particles.vertices.push(particle);
@@ -360,8 +361,15 @@
         for (var i = 0; i < scene.children.length; i++) {
           var object = scene.children[i];
 
+          var xSpeed = 5;
+          var ySpeed = 5;
+          var zSpeed = 10;
+          
           if (object instanceof THREE.Points) {
-            object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
+            object.rotation.x = time * (i < 40 ? i + xSpeed : -(i + xSpeed));
+            object.rotation.y = time * (i < 100 ? i + ySpeed : -(i + ySpeed));
+            object.rotation.z = time * (i < 30 ? i + zSpeed : -(i + zSpeed));
+            
           }
         }
         analyser.getFrequencyData();
@@ -413,6 +421,7 @@
           sound.setLoop(true);
           sound.setVolume(0.5);
           sound.play();
+          sound.onEnded = (function () {nextSong();});
         });
 
         thumbnail.src = thumbnails[songIndex];
@@ -439,6 +448,7 @@
           sound.setLoop(true);
           sound.setVolume(0.5);
           sound.play();
+          sound.onEnded = (function () {nextSong();});
         });
 
         thumbnail.src = thumbnails[songIndex];
