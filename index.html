@@ -19,7 +19,7 @@
       <img src="./assets/images/openocean.jpg" id="thumbnail" />
 
       <img
-        src="./assets/icons/play.png"
+        src="./assets/icons/pause.png"
         onclick="playPause()"
         id="play-pause"
       />
@@ -212,6 +212,8 @@
       const thumbnail = document.querySelector("#thumbnail");
       const songArtist = document.querySelector(".song-artist"); // element where track artist appears
       const songTitle = document.querySelector(".song-title"); // element where track title appears
+      let pPause = document.querySelector('#play-pause');
+
       var songIndex = 0;
       var songs = ["./music/OpenOceans.mp3", "./music/Wrecklamation.mp3"]; // object storing paths for audio objects
       var thumbnails = [
@@ -247,7 +249,10 @@
         sound.setLoop(true);
         sound.setVolume(0.5);
         sound.play();
+        sound.isPlaying = true;
       });
+
+      sound.onEnded(function () {nextSong();})
 
       // create an AudioAnalyser, passing in the sound and desired fftSize
       var analyser = new THREE.AudioAnalyser(sound, 32);
@@ -378,54 +383,70 @@
       }
       animate();
 
+      function playPause() {
+        if (sound.isPlaying) {
+            pPause.src = "./assets/icons/play.png"
+            thumbnail.style.transform = "scale(1.15)";
+
+            sound.pause();
+        } else {
+            pPause.src = "./assets/icons/pause.png"
+            thumbnail.style.transform = "scale(1)"
+
+            sound.play();
+        }
+    }
       function nextSong() {
+        if(sound.isPlaying)
+        {
+          sound.stop();
+        }
         songIndex++;
+        console.log("Song - " + songs[songIndex]);
         if (songIndex > 1) {
           songIndex = 0;
         }
-        sound.stop();
-        sound.isPlaying = false;
+
+
         audioLoader.load(songs[songIndex], function (buffer) {
           sound.setBuffer(buffer);
           sound.setLoop(true);
           sound.setVolume(0.5);
-          if (!sound.isPlaying) {
-            sound.play();
-          }
+          sound.play();
         });
 
         thumbnail.src = thumbnails[songIndex];
-        //background.src = thumbnails[songIndex];
 
         songArtist.innerHTML = songArtists[songIndex];
         songTitle.innerHTML = songTitles[songIndex];
-
-        playing = true;
+        
       }
 
       function previousSong() {
+        if(sound.isPlaying)
+        {
+          sound.stop();
+        }
         songIndex--;
+        console.log("Song - " + songs[songIndex]);
         if (songIndex < 0) {
           songIndex = 1;
         }
-        sound.stop();
-        sound.isPlaying = false;
+
+
         audioLoader.load(songs[songIndex], function (buffer) {
           sound.setBuffer(buffer);
           sound.setLoop(true);
           sound.setVolume(0.5);
-          if (!sound.isPlaying) {
-            sound.play();
-          }
+          sound.play();
         });
 
         thumbnail.src = thumbnails[songIndex];
-        //background.src = thumbnails[songIndex];
 
         songArtist.innerHTML = songArtists[songIndex];
         songTitle.innerHTML = songTitles[songIndex];
 
-        playing = true;
+        
       }
     </script>
   </body>
