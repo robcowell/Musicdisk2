@@ -209,6 +209,11 @@
     </script>
 
     <script>
+      THREE.Audio.prototype.onEnded = function() {
+        console.warn("arguments to onEnded!", arguments)
+        nextSong();
+    };
+  
       const thumbnail = document.querySelector("#thumbnail");
       const songArtist = document.querySelector(".song-artist"); // element where track artist appears
       const songTitle = document.querySelector(".song-title"); // element where track title appears
@@ -246,11 +251,21 @@
       var audioLoader = new THREE.AudioLoader();
       audioLoader.load("music/OpenOceans.mp3", function (buffer) {
         sound.setBuffer(buffer);
-        sound.setLoop(true);
+        sound.setLoop(false);
         sound.setVolume(0.5);
         sound.play();
         sound.isPlaying = true;
-        sound.onEnded = (function () {nextSong();});
+        console.log(sound);
+        //sound.onEnded = () => console.log("track ended")
+
+        /*
+        sound.onEnded = (function ()
+        {
+          console.log("Song ended");
+          this.isPlaying = false;
+          nextSong();
+        });
+        */
       });
 
       
@@ -373,7 +388,6 @@
           }
         }
         analyser.getFrequencyData();
-        //cube.material.color = new THREE.Color("rgb(" + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + "," + Math.round(analyser.getAverageFrequency()) + ")");
         time = 0.00025 * (Date.now() - start);
         fft = analyser.getAverageFrequency();
 
@@ -382,9 +396,9 @@
         cube.rotation.x += analyser.getAverageFrequency() / 10000;
         cube.rotation.y += analyser.getAverageFrequency() / 10000;
 
-        cube.scale.x = analyser.getAverageFrequency() / 100;
-        cube.scale.y = analyser.getAverageFrequency() / 100;
-        cube.scale.z = analyser.getAverageFrequency() / 100;
+        cube.scale.x = analyser.getAverageFrequency() / 200;
+        cube.scale.y = analyser.getAverageFrequency() / 200;
+        cube.scale.z = analyser.getAverageFrequency() / 200;
 
         renderer.sortObjects = false;
         renderer.render(scene, camera);
@@ -410,7 +424,7 @@
           sound.stop();
         }
         songIndex++;
-        console.log("Song - " + songs[songIndex]);
+        console.log("Song - " + songIndex + " " + songs[songIndex]);
         if (songIndex > 1) {
           songIndex = 0;
         }
@@ -418,10 +432,9 @@
 
         audioLoader.load(songs[songIndex], function (buffer) {
           sound.setBuffer(buffer);
-          sound.setLoop(true);
+          sound.setLoop(false);
           sound.setVolume(0.5);
           sound.play();
-          sound.onEnded = (function () {nextSong();});
         });
 
         thumbnail.src = thumbnails[songIndex];
@@ -445,10 +458,9 @@
 
         audioLoader.load(songs[songIndex], function (buffer) {
           sound.setBuffer(buffer);
-          sound.setLoop(true);
+          sound.setLoop(false);
           sound.setVolume(0.5);
           sound.play();
-          sound.onEnded = (function () {nextSong();});
         });
 
         thumbnail.src = thumbnails[songIndex];
