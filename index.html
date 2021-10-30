@@ -210,8 +210,8 @@
     </script>
 
     <script>
-      THREE.Audio.prototype.onEnded = function() {
-        console.warn("arguments to onEnded!", arguments)
+    THREE.Audio.prototype.onEnded = function()
+    {
         nextSong();
     };
 
@@ -239,9 +239,9 @@
       var start = Date.now();
       var scene = new THREE.Scene();
       var camera = new THREE.PerspectiveCamera(
-        75,
+        95,
         window.innerWidth / window.innerHeight,
-        0.1,
+        1,
         1000
       );
 
@@ -292,29 +292,35 @@
       //scene.add(directionalLight);
 
       // create the particle variables
+      var xSpeed = 5;
+      var ySpeed = 5;
+      var zSpeed = 5;
+      var xVelocity = 2;
+      var yVelocity = 2;
+      var zVelocity = 2;
+      var upperBound = 150;
+      var lowerBound = -150;
+
       var particleCount = 8000,
         particles = new THREE.Geometry(),
         pMaterial = new THREE.PointsMaterial({
-          color: 0x5555ff,
-          size: 10,
+          color: 0x6666ff,
+          size: 2,
           map: new THREE.TextureLoader().load("assets/images/particle.png"),
           blending: THREE.AdditiveBlending,
           depthTest: false,
           transparent: false,
         });
 
-      particles.velocity = new THREE.Vector3(0, Math.random(), 0);
-
       // now create the individual particles
       for (var p = 0; p < particleCount; p++) {
         // create a particle with random
-        // position values, -250 -> 250
-        var pX = Math.random() * 500 - 250,
-          pY = Math.random() * 500 - 250,
-          pZ = Math.random() * 500 - 250,
+
+        var pX = Math.random() * 500 - (upperBound*2),
+          pY = Math.random() * 500 - (upperBound*2),
+          pZ = Math.random() * 500 - (upperBound*2),
           particle = new THREE.Vector3(pX, pY, pZ);
 
-        particle.velocity = new THREE.Vector3(10, Math.random() * 400, 10);
 
         // add it to the geometry
         particles.vertices.push(particle);
@@ -331,8 +337,8 @@
       // add it to the scene
       scene.add(particleSystem);
 
-      var geometry = new THREE.SphereGeometry(1.5, 64, 64);
-      //var geometry = new THREE.IcosahedronGeometry(2,4);
+      //var geometry = new THREE.SphereGeometry(1.5, 64, 64);
+      var geometry = new THREE.IcosahedronGeometry(2,4);
       material = new THREE.ShaderMaterial({
         uniforms: {
           tExplosion: {
@@ -353,16 +359,6 @@
         fragmentShader: document.getElementById("fragmentShader").textContent,
       });
 
-      var phong = new THREE.MeshPhongMaterial({
-        color: 0x110000,
-        shininess: 150,
-        depthTest: true,
-        fog: true,
-        reflectivity: 2,
-        refractionRatio: 0.98,
-        transparent: false,
-        specular: 0x111111,
-      });
       var cube = new THREE.Mesh(geometry, material);
       scene.add(cube);
       renderer.sortObjects = true;
@@ -380,20 +376,42 @@
         camera.position.y += (-3 - camera.position.y) * 0.05;
 
         camera.lookAt(scene.position);
+
         for (var i = 0; i < scene.children.length; i++) {
           var object = scene.children[i];
 
-          var xSpeed = 5;
-          var ySpeed = 5;
-          var zSpeed = 10;
+
 
           if (object instanceof THREE.Points) {
             object.rotation.x = time * (i < 40 ? i + xSpeed : -(i + xSpeed));
             object.rotation.y = time * (i < 100 ? i + ySpeed : -(i + ySpeed));
             object.rotation.z = time * (i < 30 ? i + zSpeed : -(i + zSpeed));
 
+
+            if(object.position.y > upperBound/2 || object.position.y < lowerBound/2)
+            {
+              yVelocity = -yVelocity;
+            }
+            object.position.y += yVelocity;
+
+            if(object.position.x > upperBound/2 || object.position.x < lowerBound/2)
+            {
+              xVelocity = -xVelocity;
+            }
+              object.position.x += xVelocity;
+
+            if(object.position.z > upperBound/2 || object.position.z < lowerBound/2)
+            {
+              zVelocity = -zVelocity;
+            }
+            object.position.z += zVelocity;
+
+            console.log (object.position);
+
+
           }
         }
+
         analyser.getFrequencyData();
         time = 0.00025 * (Date.now() - start);
         fft = analyser.getAverageFrequency();
