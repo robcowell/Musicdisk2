@@ -10,6 +10,7 @@ export default function boot() {
   var stats = Stats();
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
   document.body.appendChild(stats.dom);
+  getTracks();
 
   THREE.Audio.prototype.onEnded = function () {
     nextSong();
@@ -21,19 +22,6 @@ export default function boot() {
   let pPause = document.querySelector("#play-pause");
 
   var songIndex = 0;
-  /*
-  var songs = ["./music/OpenOceans.mp3", "./music/Wrecklamation.mp3"]; // object storing paths for audio objects
-  var thumbnails = [
-    "./assets/images/openocean.jpg",
-    "assets/images/wrecklamation.jpg",
-  ]; // object storing paths for album covers and backgrounds
-  var songArtists = ["Bossman of RiFT", "Hoffman"]; // object storing track artists
-  var songTitles = [
-    "Open Oceans",
-    "Wrecklamation (Bossman Psyclamation Remix)",
-  ]; // object storing track titles
-*/
-
   var allTracks;
   var error;
 
@@ -49,6 +37,7 @@ export default function boot() {
       })
       .then((jsonResponse) => {
         allTracks = jsonResponse.tracks;
+        console.log(allTracks);
       })
       .catch((error) => {
         error = error;
@@ -57,7 +46,6 @@ export default function boot() {
       });
   }
 
-  console.log(allTracks);
   var start = Date.now();
   var scene = new THREE.Scene();
   var camera = new THREE.PerspectiveCamera(
