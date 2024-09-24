@@ -21,12 +21,12 @@
     <div class="box"></div>
     <img src="./assets/images/openocean.jpg" id="thumbnail" />
 
-    <img src="./assets/icons/pause.png" onclick="playPause()" id="play-pause" />
-    <img src="./assets/icons/forward.png" onclick="nextSong();" id="next-song" />
-    <img src="./assets/icons/backward.png" onclick="previousSong();" id="previous-song" />
+    <img src="./assets/icons/play.png"  id="play-pause" />
+    <img src="./assets/icons/forward.png"  id="next-song" />
+    <img src="./assets/icons/backward.png"  id="previous-song" />
 
-    <div class="song-artist">Bossman</div>
-    <div class="song-title">Open Oceans</div>
+    <div class="song-artist"></div>
+    <div class="song-title"></div>
 
     <!-- Input element for progress bar - min=0 starting value of every song - max length will change per song so leave empty -->
 
@@ -37,7 +37,15 @@
   </div>
 
   <script type="module">
-    import boot from "./js/musicdisk.js";
+    import boot, {nextSong, previousSong, playPause} from "./js/musicdisk.js";
+/*
+    import nextSong from "./js/musicdisk.js";
+    import previousSong from "./js/musicdisk.js";
+    import playPause from "./js/musicdisk.js";
+*/
+    document.querySelector('img#play-pause').addEventListener('click', playPause);
+    document.querySelector('img#next-song').addEventListener('click', nextSong);
+    document.querySelector('img#previous-song').addEventListener('click', previousSong);
 
     boot();
   </script>

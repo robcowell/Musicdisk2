@@ -4,28 +4,114 @@ import Stats from "./stats.module.js";
 import frag from "../shaders/default_frag.js";
 import vert from "../shaders/default_vert.js";
 
-export default function boot() {
-  console.log("Booting...");
-
-  var stats = Stats();
-  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
-  document.body.appendChild(stats.dom);
-  getTracks();
-
-  THREE.Audio.prototype.onEnded = function () {
-    nextSong();
-  };
-
   const thumbnail = document.querySelector("#thumbnail");
   const songArtist = document.querySelector(".song-artist"); // element where track artist appears
   const songTitle = document.querySelector(".song-title"); // element where track title appears
   let pPause = document.querySelector("#play-pause");
 
+  var renderer;
+  var camera;
+  var scene;
+  var cube;
+
   var songIndex = 0;
   var allTracks;
+  var sound;
+  var listener;
+  var analyser;
+
   var error;
 
-  function getTracks() {
+  var xSpeed;
+  var ySpeed;
+  var zSpeed;
+  var xVelocity;
+  var yVelocity;
+  var zVelocity;
+  var upperBound;
+  var lowerBound;
+
+  var initialized = false;
+
+  export function playPause()
+  {
+    console.log("Play/Pause");
+    if(!initialized)
+    {
+      doSound();
+    }
+    if (sound.isPlaying)
+    {
+      pPause.src = "./assets/icons/play.png";
+      thumbnail.style.transform = "scale(1.15)";
+      sound.pause();
+      sound.isPlaying = false;
+    } else
+    {
+      pPause.src = "./assets/icons/pause.png";
+      thumbnail.style.transform = "scale(1)";
+      sound.play();
+    }
+  }
+
+  export function nextSong()
+  {
+    console.log("Next Song");
+    if (sound.isPlaying)
+    {
+      sound.stop();
+    }
+    songIndex++;
+    console.log("Song - " + songIndex + " " + songs[songIndex]);
+    if (songIndex > 1)
+    {
+      songIndex = 0;
+    }
+
+    audioLoader.load(songs[songIndex], function (buffer)
+    {
+      sound.setBuffer(buffer);
+      sound.setLoop(false);
+      sound.setVolume(0.5);
+      sound.play();
+    });
+
+    thumbnail.src = thumbnails[songIndex];
+    songArtist.innerHTML = songArtists[songIndex];
+    songTitle.innerHTML = songTitles[songIndex];
+  }
+
+  export function previousSong()
+  {
+    console.log("Previous Song");
+    if (sound.isPlaying)
+    {
+      sound.stop();
+    }
+    songIndex--;
+    console.log("Song - " + songs[songIndex]);
+    if (songIndex < 0)
+    {
+      songIndex = 1;
+    }
+
+    audioLoader.load(songs[songIndex], function (buffer)
+    {
+      sound.setBuffer(buffer);
+      sound.setLoop(false);
+      sound.setVolume(0.5);
+      sound.play();
+    });
+
+    thumbnail.src = thumbnails[songIndex];
+
+    songArtist.innerHTML = songArtists[songIndex];
+    songTitle.innerHTML = songTitles[songIndex];
+  }
+
+  function getTracks()
+  {
+    console.log("Get tracks");
     fetch("./assets/data.json")
       .then((response) => {
         if (!response.ok) {
@@ -46,21 +132,26 @@ export default function boot() {
       });
   }
 
-  var start = Date.now();
-  var scene = new THREE.Scene();
-  var camera = new THREE.PerspectiveCamera(
-    95,
-    window.innerWidth / window.innerHeight,
-    1,
-    1000
-  );
+  export default function boot()
+{
+  console.log("Booting...");
+/*
+  var stats = Stats();
+  stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+  document.body.appendChild(stats.dom);
+*/
+  getTracks();
+  render();
+}
 
+function doSound()
+{
   // create an AudioListener and add it to the camera
-  var listener = new THREE.AudioListener();
+  listener = new THREE.AudioListener();
   camera.add(listener);
 
   // create a global audio source
-  var sound = new THREE.Audio(listener);
+  sound = new THREE.Audio(listener);
 
   // load a sound and set it as the Audio object's buffer
   if (allTracks) {
@@ -69,7 +160,11 @@ export default function boot() {
     audioLoader.load(allTracks[0].path, function (buffer) {
       sound.setBuffer(buffer);
       sound.setLoop(false);
-      sound.setVolume(alltracks[0].volume);
+      sound.setVolume(allTracks[0].volume);
+      if(sound.isPlaying)
+      {
+        sound.stop();
+      }
       sound.play();
       sound.isPlaying = true;
       console.log(sound);
@@ -84,15 +179,27 @@ export default function boot() {
     });
     */
     });
+    initialized = true;
+      // create an AudioAnalyser, passing in the sound and desired fftSize
+    analyser = new THREE.AudioAnalyser(sound, 32);
+
+    // get the average frequency of the sound
+    var audiodata = analyser.getAverageFrequency();
+    animate();
+  }
   }
 
-  // create an AudioAnalyser, passing in the sound and desired fftSize
-  var analyser = new THREE.AudioAnalyser(sound, 32);
-
-  // get the average frequency of the sound
-  var audiodata = analyser.getAverageFrequency();
-
-  var renderer = new THREE.WebGLRenderer();
+function render()
+{
+  var start = Date.now();
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(
+    95,
+    window.innerWidth / window.innerHeight,
+    1,
+    1000
+  );
+  renderer = new THREE.WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   document.body.appendChild(renderer.domElement);
 
@@ -103,14 +210,14 @@ export default function boot() {
   //scene.add(directionalLight);
 
   // create the particle variables
-  var xSpeed = 5;
-  var ySpeed = 5;
-  var zSpeed = 5;
-  var xVelocity = 2;
-  var yVelocity = 2;
-  var zVelocity = 2;
-  var upperBound = 150;
-  var lowerBound = -150;
+  xSpeed = 5;
+  ySpeed = 5;
+  zSpeed = 5;
+  xVelocity = 2;
+  yVelocity = 2;
+  zVelocity = 2;
+  upperBound = 150;
+  lowerBound = -150;
 
   var particleCount = 8000,
     particles = new THREE.BufferGeometry(),
@@ -172,17 +279,16 @@ export default function boot() {
     fragmentShader: frag,
   });
 
-  var cube = new THREE.Mesh(geometry, material);
+  cube = new THREE.Mesh(geometry, material);
   scene.add(cube);
   renderer.sortObjects = true;
 
   camera.position.z = 5;
+}
 
-  function animate() {
-    stats.begin();
-
-    // monitored code goes here
-
+function animate()
+{
+  //    stats.begin();
     var time = Date.now() * 0.00003;
 
     camera.position.x += (3 - camera.position.x) * 0.05;
@@ -231,69 +337,10 @@ export default function boot() {
     renderer.sortObjects = false;
     renderer.render(scene, camera);
 
-    stats.end();
+//    stats.end();
 
     requestAnimationFrame(animate);
   }
 
-  animate();
 
-  function playPause() {
-    if (sound.isPlaying) {
-      pPause.src = "./assets/icons/play.png";
-      thumbnail.style.transform = "scale(1.15)";
-
-      sound.pause();
-    } else {
-      pPause.src = "./assets/icons/pause.png";
-      thumbnail.style.transform = "scale(1)";
-
-      sound.play();
-    }
-  }
-  function nextSong() {
-    if (sound.isPlaying) {
-      sound.stop();
-    }
-    songIndex++;
-    console.log("Song - " + songIndex + " " + songs[songIndex]);
-    if (songIndex > 1) {
-      songIndex = 0;
-    }
-
-    audioLoader.load(songs[songIndex], function (buffer) {
-      sound.setBuffer(buffer);
-      sound.setLoop(false);
-      sound.setVolume(0.5);
-      sound.play();
-    });
-
-    thumbnail.src = thumbnails[songIndex];
-
-    songArtist.innerHTML = songArtists[songIndex];
-    songTitle.innerHTML = songTitles[songIndex];
-  }
-
-  function previousSong() {
-    if (sound.isPlaying) {
-      sound.stop();
-    }
-    songIndex--;
-    console.log("Song - " + songs[songIndex]);
-    if (songIndex < 0) {
-      songIndex = 1;
-    }
-
-    audioLoader.load(songs[songIndex], function (buffer) {
-      sound.setBuffer(buffer);
-      sound.setLoop(false);
-      sound.setVolume(0.5);
-      sound.play();
-    });
-
-    thumbnail.src = thumbnails[songIndex];
-
-    songArtist.innerHTML = songArtists[songIndex];
-    songTitle.innerHTML = songTitles[songIndex];
-  }
-}
+  

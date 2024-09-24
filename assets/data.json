@@ -1,7 +1,7 @@
 {
   "tracks": [
     {
-      "path": "./assets/music/OpenOceeans.mp3",
+      "path": "./assets/music/OpenOceans.mp3",
       "thumbnail": "./assets/images/openocean.jpg",
       "artist": "Bossman of RiFT",
       "title": "Open Oceans",
@@ -13,13 +13,6 @@
       "artist": "Hoffman",
       "title": "Wrecklamation (Bossman Psyclamation Remix)",
       "volume": 1.0
-    },
-    {
-      "path": "./assets/music/Hold On Til Tomorrow.mp3",
-      "thumbnail": "./assets/images/explosion.png",
-      "artist": "Bossman & Mygg",
-      "volume": 1.0
-
     }
   ]
 }
