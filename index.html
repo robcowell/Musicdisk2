@@ -19,7 +19,7 @@
 <body>
   <div class="container">
     <div class="box"></div>
-    <img src="./assets/images/openocean.jpg" id="thumbnail" />
+    <img id="thumbnail" />
 
     <img src="./assets/icons/play.png"  id="play-pause" />
     <img src="./assets/icons/forward.png"  id="next-song" />
@@ -38,15 +38,9 @@
 
   <script type="module">
     import boot, {nextSong, previousSong, playPause} from "./js/musicdisk.js";
-/*
-    import nextSong from "./js/musicdisk.js";
-    import previousSong from "./js/musicdisk.js";
-    import playPause from "./js/musicdisk.js";
-*/
     document.querySelector('img#play-pause').addEventListener('click', playPause);
     document.querySelector('img#next-song').addEventListener('click', nextSong);
     document.querySelector('img#previous-song').addEventListener('click', previousSong);
-
     boot();
   </script>
 </body>

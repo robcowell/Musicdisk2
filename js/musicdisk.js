@@ -53,6 +53,12 @@ import vert from "../shaders/default_vert.js";
       pPause.src = "./assets/icons/pause.png";
       thumbnail.style.transform = "scale(1)";
       sound.play();
+      sound.onEnded = (function ()
+    {
+      console.log("Song ended");
+      this.isPlaying = false;
+      nextSong();
+    });
     }
   }
 
@@ -64,18 +70,24 @@ import vert from "../shaders/default_vert.js";
       sound.stop();
     }
     songIndex++;
-    console.log("Song - " + songIndex + " " + allTracks[songIndex].title);
     if (songIndex > 1)
     {
       songIndex = 0;
     }
-
+    console.log("Song - " + songIndex + " " + allTracks[songIndex].title);
     audioLoader.load(allTracks[songIndex].path, function (buffer)
     {
       sound.setBuffer(buffer);
       sound.setLoop(false);
       sound.setVolume(0.5);
       sound.play();
+    });
+    //do we need to reattach this?
+    sound.onEnded = (function ()
+    {
+      console.log("Song ended");
+      this.isPlaying = false;
+      nextSong();
     });
 
     thumbnail.src = allTracks[songIndex].thumbnail;
@@ -91,18 +103,24 @@ import vert from "../shaders/default_vert.js";
       sound.stop();
     }
     songIndex--;
-    console.log("Song - " + allTracks[songIndex].title);
     if (songIndex < 0)
     {
       songIndex = 1;
     }
-
+    console.log("Song - " + allTracks[songIndex].title);
     audioLoader.load(allTracks[songIndex].path, function (buffer)
     {
       sound.setBuffer(buffer);
       sound.setLoop(false);
       sound.setVolume(0.5);
       sound.play();
+    });
+    //reattach callback?
+    sound.onEnded = (function ()
+    {
+      console.log("Song ended");
+      this.isPlaying = false;
+      nextSong();
     });
 
     thumbnail.src = allTracks[songIndex].thumbnail;
@@ -168,17 +186,12 @@ function doSound()
       }
       sound.play();
       sound.isPlaying = true;
+      thumbnail.src = allTracks[songIndex].thumbnail;
+      songArtist.innerHTML = allTracks[songIndex].artist;
+      songTitle.innerHTML = allTracks[songIndex].title;
       console.log(sound);
-      //sound.onEnded = () => console.log("track ended")
-
-      /*
-    sound.onEnded = (function ()
-    {
-      console.log("Song ended");
-      this.isPlaying = false;
-      nextSong();
-    });
-    */
+            
+    
     });
     initialized = true;
       // create an AudioAnalyser, passing in the sound and desired fftSize
