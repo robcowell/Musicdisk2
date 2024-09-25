@@ -1,6 +1,7 @@
-import * as THREE from "./three.module.js";
-import Stats from "./stats.module.js";
+//import * as THREE from "./three.module.js";
 
+import Stats from "./stats.module.js";
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.168.0/build/three.module.js';
 import frag from "../shaders/default_frag.js";
 import vert from "../shaders/default_vert.js";
 
