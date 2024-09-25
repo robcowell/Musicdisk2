@@ -5,13 +5,20 @@
       "thumbnail": "./assets/images/openocean.jpg",
       "artist": "Bossman of RiFT",
       "title": "Open Oceans",
-      "volume": 0.5
+      "volume": 1.0
     },
     {
       "path": "./assets/music/Wrecklamation.mp3",
       "thumbnail": "./assets/images/wrecklamation.jpg",
       "artist": "Hoffman",
       "title": "Wrecklamation (Bossman Psyclamation Remix)",
+      "volume": 2.0
+    },
+    {
+      "path": "./assets/music/Still J.U.I.C.Y..wav",
+      "thumbnail": "./assets/images/explosion.png",
+      "artist": "Bossman of RiFT",
+      "title": "Still J.U.I.C.Y.",
       "volume": 1.0
     }
   ]

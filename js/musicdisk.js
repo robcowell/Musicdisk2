@@ -71,7 +71,7 @@ import vert from "../shaders/default_vert.js";
       sound.stop();
     }
     songIndex++;
-    if (songIndex > 1)
+    if (songIndex > allTracks.length-1)
     {
       songIndex = 0;
     }
@@ -106,7 +106,7 @@ import vert from "../shaders/default_vert.js";
     songIndex--;
     if (songIndex < 0)
     {
-      songIndex = 1;
+      songIndex = allTracks.length-1;
     }
     console.log("Song - " + allTracks[songIndex].title);
     audioLoader.load(allTracks[songIndex].path, function (buffer)
