@@ -14,6 +14,8 @@ import vert from "../shaders/default_vert.js";
   var scene;
   var cube;
 
+  var audioLoader;
+  var songs;
   var songIndex = 0;
   var allTracks;
   var sound;
@@ -62,13 +64,13 @@ import vert from "../shaders/default_vert.js";
       sound.stop();
     }
     songIndex++;
-    console.log("Song - " + songIndex + " " + songs[songIndex]);
+    console.log("Song - " + songIndex + " " + allTracks[songIndex].title);
     if (songIndex > 1)
     {
       songIndex = 0;
     }
 
-    audioLoader.load(songs[songIndex], function (buffer)
+    audioLoader.load(allTracks[songIndex].path, function (buffer)
     {
       sound.setBuffer(buffer);
       sound.setLoop(false);
@@ -76,9 +78,9 @@ import vert from "../shaders/default_vert.js";
       sound.play();
     });
 
-    thumbnail.src = thumbnails[songIndex];
-    songArtist.innerHTML = songArtists[songIndex];
-    songTitle.innerHTML = songTitles[songIndex];
+    thumbnail.src = allTracks[songIndex].thumbnail;
+    songArtist.innerHTML = allTracks[songIndex].artist;
+    songTitle.innerHTML = allTracks[songIndex].title;
   }
 
   export function previousSong()
@@ -89,13 +91,13 @@ import vert from "../shaders/default_vert.js";
       sound.stop();
     }
     songIndex--;
-    console.log("Song - " + songs[songIndex]);
+    console.log("Song - " + allTracks[songIndex].title);
     if (songIndex < 0)
     {
       songIndex = 1;
     }
 
-    audioLoader.load(songs[songIndex], function (buffer)
+    audioLoader.load(allTracks[songIndex].path, function (buffer)
     {
       sound.setBuffer(buffer);
       sound.setLoop(false);
@@ -103,10 +105,9 @@ import vert from "../shaders/default_vert.js";
       sound.play();
     });
 
-    thumbnail.src = thumbnails[songIndex];
-
-    songArtist.innerHTML = songArtists[songIndex];
-    songTitle.innerHTML = songTitles[songIndex];
+    thumbnail.src = allTracks[songIndex].thumbnail;
+    songArtist.innerHTML = allTracks[songIndex].artist;
+    songTitle.innerHTML = allTracks[songIndex].title;
   }
 
   function getTracks()
@@ -155,7 +156,7 @@ function doSound()
 
   // load a sound and set it as the Audio object's buffer
   if (allTracks) {
-    var audioLoader = new THREE.AudioLoader();
+    audioLoader = new THREE.AudioLoader();
     console.log(allTracks);
     audioLoader.load(allTracks[0].path, function (buffer) {
       sound.setBuffer(buffer);
