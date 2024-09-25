@@ -5,3 +5,6 @@ _nb._ Music files are not included in the repository - you will need to add your
 
 ## Contributing
 Fork the repo, work on your copy, send a pull request for me to look at, ideally with suitable notes explaining your change
+
+## License
+Licensed under the terms of the GPL3 license - see the file LICENSE for details
