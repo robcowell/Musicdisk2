@@ -8,7 +8,11 @@ import vert from "../shaders/default_vert.js";
   const thumbnail = document.querySelector("#thumbnail");
   const songArtist = document.querySelector(".song-artist"); // element where track artist appears
   const songTitle = document.querySelector(".song-title"); // element where track title appears
+  
   let pPause = document.querySelector("#play-pause");
+  let progBar = document.querySelector('#progress-bar');
+  
+  var progBarLength = 0;
 
   var renderer;
   var camera;
@@ -82,6 +86,8 @@ import vert from "../shaders/default_vert.js";
       sound.setLoop(false);
       sound.setVolume(0.5);
       sound.play();
+      progBarLength = buffer.duration
+      console.log('Duration ' + buffer.duration);
     });
     //do we need to reattach this?
     sound.onEnded = (function ()
@@ -94,6 +100,8 @@ import vert from "../shaders/default_vert.js";
     thumbnail.src = allTracks[songIndex].thumbnail;
     songArtist.innerHTML = allTracks[songIndex].artist;
     songTitle.innerHTML = allTracks[songIndex].title;
+    progBar.max = progBarLength;
+    console.log(progBar.max);
   }
 
   export function previousSong()
@@ -115,6 +123,8 @@ import vert from "../shaders/default_vert.js";
       sound.setLoop(false);
       sound.setVolume(0.5);
       sound.play();
+      progBarLength = buffer.duration
+      console.log('Duration ' + buffer.duration);
     });
     //reattach callback?
     sound.onEnded = (function ()
@@ -127,6 +137,8 @@ import vert from "../shaders/default_vert.js";
     thumbnail.src = allTracks[songIndex].thumbnail;
     songArtist.innerHTML = allTracks[songIndex].artist;
     songTitle.innerHTML = allTracks[songIndex].title;
+    progBar.max = progBarLength;
+    console.log(progBar.max);
   }
 
   function getTracks()
@@ -190,11 +202,15 @@ function doSound()
       thumbnail.src = allTracks[songIndex].thumbnail;
       songArtist.innerHTML = allTracks[songIndex].artist;
       songTitle.innerHTML = allTracks[songIndex].title;
-      console.log(sound);
+      
+      progBarLength = buffer.duration
+      progBar.max = progBarLength;
             
     
     });
     initialized = true;
+    
+    
       // create an AudioAnalyser, passing in the sound and desired fftSize
     analyser = new THREE.AudioAnalyser(sound, 32);
 
@@ -357,5 +373,7 @@ function animate()
     requestAnimationFrame(animate);
   }
 
-
+export function changeProgressBar()
+{
   
+}

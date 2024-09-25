@@ -30,17 +30,18 @@
 
     <!-- Input element for progress bar - min=0 starting value of every song - max length will change per song so leave empty -->
 
-    <input type="range" id="progress-bar" min="0" max="" value="0" onchange="changeProgressBar()" />
+    <input type="range" id="progress-bar" min="0" max="" value="0" />
 
     <div class="currentTime"></div>
     <div class="durationTime"></div>
   </div>
 
   <script type="module">
-    import boot, {nextSong, previousSong, playPause} from "./js/musicdisk.js";
+    import boot, {nextSong, previousSong, playPause, changeProgressBar} from "./js/musicdisk.js";
     document.querySelector('img#play-pause').addEventListener('click', playPause);
     document.querySelector('img#next-song').addEventListener('click', nextSong);
     document.querySelector('img#previous-song').addEventListener('click', previousSong);
+    document.querySelector('#progress-bar').addEventListener('onchange', changeProgressBar)
     boot();
   </script>
 </body>
